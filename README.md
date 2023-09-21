@@ -1,5 +1,5 @@
 # RenAge
-RenAge: A Novel Epigenetic Clock through Innovative Image Regression for Unprecedented Precision.
+RenAge: A Novel Epigenetic Clock through Innovative Image Regression.
 Code will be released upon publication.
 
 ```python
