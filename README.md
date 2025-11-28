@@ -1,5 +1,5 @@
 # RenAge
-RenAge: A Novel Epigenetic Clock through Innovative Image Regression.
+RenAge: An Accurate Pan-Tissue Epigenetic Clock Based On a Novel Neural Network Architecture.
 Code will be released upon publication.
 
 ```python
@@ -10,7 +10,7 @@ RenAge = RenAge.predict()
 ## Citation
 
 ## License
-Copyright 2023, Guoqin Ren.
+Copyright 2025, Guoqin Ren.
 
 All Rights Reserved
 
