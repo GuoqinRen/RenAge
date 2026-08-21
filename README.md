@@ -192,5 +192,7 @@ can be added when available.
 
 ## License
 
-Copyright 2025, Guoqin Ren. See `LICENSE` for the repository's existing use and
-distribution terms.
+RenAge is free for non-commercial use. Commercial use requires prior written
+permission. For commercial applications or licensing, contact
+[Guoqin Ren through GitHub](https://github.com/GuoqinRen). See
+[`LICENSE`](LICENSE) for the full terms.
