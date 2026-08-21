@@ -131,12 +131,26 @@ python -m pip install ".[parquet]"
 renage predict methylation.csv --output age_predictions.csv
 ```
 
-The result contains two columns:
+To place predicted and actual ages side by side, identify the age field in the
+input:
+
+```bash
+renage predict methylation_with_age.csv \
+  --actual-age-field Age \
+  --output age_comparison.csv
+```
+
+For sample-by-CpG input, `Age` is a column. For CpG-by-sample input, it is a
+row label. The age field is included only for comparison and is never supplied
+to the predictor.
+
+The output columns are:
 
 | Column | Meaning |
 |---|---|
 | `sample_id` | Input sample identifier |
 | `predicted_age_years` | RenAge chronological-age prediction in years |
+| `actual_age_years` | Supplied chronological age; present only with `--actual-age-field` |
 
 The default `auto` device uses CUDA when available, then Apple Metal when
 available, and otherwise CPU. Run `renage predict --help` for all options.

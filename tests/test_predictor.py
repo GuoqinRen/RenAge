@@ -42,6 +42,7 @@ class PredictorTests(unittest.TestCase):
             pd.DataFrame(
                 {
                     "sample_id": ["one", "two"],
+                    "Age": [42.5, 67.0],
                     "cg0001": [0.1, 0.4],
                     "cg0002": [0.2, 0.5],
                     "cg0003": [0.3, 0.6],
@@ -51,6 +52,26 @@ class PredictorTests(unittest.TestCase):
             self.assertEqual(result.predictions["sample_id"].tolist(), ["one", "two"])
             np.testing.assert_allclose(
                 result.predictions["predicted_age_years"], [0.2, 0.5], rtol=1e-6
+            )
+            self.assertEqual(
+                result.predictions.columns.tolist(),
+                ["sample_id", "predicted_age_years"],
+            )
+
+            comparison = predict_file(
+                source,
+                assets=assets,
+                actual_age_field="Age",
+                allow_download=False,
+                device="cpu",
+            )
+            self.assertEqual(
+                comparison.predictions.columns.tolist(),
+                ["sample_id", "predicted_age_years", "actual_age_years"],
+            )
+            np.testing.assert_allclose(comparison.predictions["actual_age_years"], [42.5, 67.0])
+            np.testing.assert_allclose(
+                comparison.predictions["predicted_age_years"], [0.2, 0.5], rtol=1e-6
             )
 
 

@@ -10,7 +10,7 @@ import pandas as pd
 import torch
 
 from .assets import resolve_assets, validate_asset_dir
-from .input import InputQC, load_feature_ids, prepare_input
+from .input import InputQC, load_feature_ids, prepare_input_with_actual_ages
 
 
 @dataclass(frozen=True)
@@ -71,6 +71,7 @@ def predict_file(
     assets: str | Path | None = None,
     orientation: str = "auto",
     sample_id_column: str | None = None,
+    actual_age_field: str | None = None,
     min_coverage: float = 0.80,
     batch_size: int = 128,
     device: str = "auto",
@@ -80,13 +81,14 @@ def predict_file(
     validate_asset_dir(asset_dir)
     feature_ids = load_feature_ids(asset_dir / "feature_ids.txt")
     reference_values = np.load(asset_dir / "reference_values.npy", allow_pickle=False).astype(np.float32)
-    sample_ids, matrix, qc = prepare_input(
+    sample_ids, matrix, qc, actual_ages = prepare_input_with_actual_ages(
         input_path,
         feature_ids,
         reference_values,
         orientation=orientation,
         sample_id_column=sample_id_column,
         min_coverage=min_coverage,
+        actual_age_field=actual_age_field,
     )
     ages, device_name = predict_matrix(
         matrix,
@@ -95,4 +97,6 @@ def predict_file(
         device=device,
     )
     predictions = pd.DataFrame({"sample_id": sample_ids, "predicted_age_years": ages})
+    if actual_ages is not None:
+        predictions["actual_age_years"] = actual_ages
     return PredictionResult(predictions=predictions, qc=qc, device=device_name, asset_dir=asset_dir)

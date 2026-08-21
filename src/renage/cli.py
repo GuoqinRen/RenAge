@@ -31,6 +31,15 @@ def _build_parser() -> argparse.ArgumentParser:
         default="auto",
     )
     predict.add_argument("--sample-id-column", help="sample identifier column for sample-by-CpG input")
+    predict.add_argument(
+        "--actual-age-field",
+        "--age-column",
+        dest="actual_age_field",
+        help=(
+            "optional age column for sample-by-CpG input or age row label for "
+            "CpG-by-sample input; adds actual_age_years to the output"
+        ),
+    )
     predict.add_argument("--min-coverage", type=float, default=0.80)
     predict.add_argument("--batch-size", type=int, default=128)
     predict.add_argument("--device", choices=("auto", "cpu", "cuda", "mps"), default="auto")
@@ -50,6 +59,7 @@ def main(argv: list[str] | None = None) -> None:
         assets=args.assets,
         orientation=args.orientation,
         sample_id_column=args.sample_id_column,
+        actual_age_field=args.actual_age_field,
         min_coverage=args.min_coverage,
         batch_size=args.batch_size,
         device=args.device,
