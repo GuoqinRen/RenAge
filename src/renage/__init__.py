@@ -1,4 +1,4 @@
-"""RenAge ensemble inference."""
+"""RenAge epigenetic age inference."""
 
 from .predictor import PredictionResult, predict_file
 

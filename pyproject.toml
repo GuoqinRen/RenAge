@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "renage"
 version = "1.0.0"
-description = "Cross-platform inference for the RenAge DNA methylation age ensemble"
+description = "Cross-platform inference for the RenAge pan-tissue epigenetic clock"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{name = "Guoqin Ren"}]

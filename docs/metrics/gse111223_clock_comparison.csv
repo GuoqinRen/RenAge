@@ -1,0 +1,5 @@
+cohort,clock,intended_scope,n_samples,mae_years,rmse_years,r_squared
+GSE111223,RenAge,Pan-tissue,131,0.983608,1.344901,0.979768
+GSE111223,Skin & Blood,Skin and blood,131,8.009627,9.061315,0.081569
+GSE111223,AltumAge,Multi-tissue,131,8.266535,9.983976,-0.114990
+GSE111223,Horvath multi-tissue,Multi-tissue,131,10.692635,12.593318,-0.773962

@@ -1,4 +1,4 @@
-"""Public inference interface for the RenAge ensemble."""
+"""Public inference interface for the RenAge epigenetic clock."""
 
 from __future__ import annotations
 

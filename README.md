@@ -1,9 +1,17 @@
-# RenAge ensemble
+# RenAge: An Accurate Pan-Tissue Epigenetic Clock
 
-RenAge predicts chronological age from DNA methylation beta values. This
-repository contains only the software and frozen assets needed for inference.
-It does not contain development scripts, methylation datasets, or sample-level
-benchmark records.
+<p align="center">
+  <img alt="Python 3.10 or newer" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white">
+  <img alt="Linux and macOS" src="https://img.shields.io/badge/Platforms-Linux%20%7C%20macOS-0F766E">
+  <img alt="Latest release" src="https://img.shields.io/github/v/release/GuoqinRen/RenAge?color=7C3AED">
+  <img alt="Tests" src="https://github.com/GuoqinRen/RenAge/actions/workflows/test.yml/badge.svg?branch=main">
+  <img alt="Research use only" src="https://img.shields.io/badge/Use-Research%20Only-EA580C">
+</p>
+
+RenAge predicts chronological age from DNA methylation beta values across
+tissues. This repository contains only the software and frozen assets needed
+for inference. It does not contain development scripts, methylation datasets,
+or sample-level benchmark records.
 
 ## Requirements
 
@@ -75,16 +83,19 @@ CUDA when available, then Apple Metal when available, and otherwise CPU.
 
 ## Performance summary
 
-Mean absolute error (MAE) is reported in years. Comparisons use complete clock
-pipelines on the same specimens within each benchmark.
+Mean absolute error (MAE) and root mean squared error (RMSE) are reported in
+years; lower is better. Comparisons within each table use the same specimens.
+
+<img src="docs/assets/benchmark_clock_mae.png" alt="Horizontal bar charts comparing RenAge MAE with established and contemporary epigenetic clocks; RenAge has the lowest MAE in both matched benchmark groups." width="960">
 
 ### Established clocks
 
-Equal-cohort results across three blood cohorts comprising 1,444 specimens:
+Equal-cohort results across 1,444 blood specimens. The three cohort IDs are
+**GSE84727**, **GSE220622**, and **GSE295450**.
 
 | Clock | MAE (years) |
 |---|---:|
-| **RenAge ensemble** | **1.521** |
+| **RenAge** | **1.521** |
 | Zhang BLUP | 2.686 |
 | Skin & Blood | 2.856 |
 | GP-age-30 | 3.952 |
@@ -98,26 +109,34 @@ Identical-specimen, equal-cohort results across four blood cohorts comprising
 
 | Clock | MAE (years) |
 |---|---:|
-| **RenAge ensemble** | **2.175** |
+| **RenAge** | **2.175** |
 | cAge | 2.696 |
 | MAPLE | 4.105 |
 | GT-Mamba | 5.648 |
 | AltumAge | 5.772 |
 
 DeepStrataAge could be evaluated in one exact-age cohort. In that cohort
-(`n=388`), MAE was 1.287 years for the RenAge ensemble and 1.959 years for
-DeepStrataAge.
+(`n=388`), MAE was 1.287 years for RenAge and 1.959 years for DeepStrataAge.
 
-### GSE111223
+### GSE111223 clock comparison
 
-The cohort-specific RenAge ensemble result for GSE111223 is:
+All clocks below were evaluated on the same 131 saliva specimens. RenAge is
+shown against clocks with multi-tissue or skin-and-blood scope.
 
-| Cohort | Samples | MAE (years) | RMSE (years) | R² |
-|---|---:|---:|---:|---:|
-| GSE111223 | 131 | 0.984 | 1.345 | 0.980 |
+<img src="docs/assets/gse111223_clock_mae.png" alt="Horizontal bar chart of GSE111223 mean absolute error: RenAge 0.984 years, Skin and Blood 8.010, AltumAge 8.267, and Horvath multi-tissue 10.693." width="760">
 
-Results from different tables should not be pooled because their cohort sets
-and sample counts differ.
+| Clock | Intended scope | MAE (years) | RMSE (years) | R² |
+|---|---|---:|---:|---:|
+| **RenAge** | Pan-tissue | **0.984** | **1.345** | **0.980** |
+| Skin & Blood | Skin and blood | 8.010 | 9.061 | 0.082 |
+| AltumAge | Multi-tissue | 8.267 | 9.984 | -0.115 |
+| Horvath multi-tissue | Multi-tissue | 10.693 | 12.593 | -0.774 |
+
+The frozen comparator implementations had 91.8%–96.0% CpG coverage on this
+array; unavailable CpGs were handled by each implementation's built-in rule.
+GSE111223 is reported separately and is not pooled with the
+benchmark summaries above. Aggregate values used in the plots are available
+in [`docs/metrics`](docs/metrics).
 
 ## Reproducibility and asset integrity
 
