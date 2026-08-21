@@ -1,0 +1,10 @@
+.DS_Store
+.pytest_cache/
+.venv/
+__pycache__/
+*.egg-info/
+build/
+dist/
+*.pt
+*.tar.gz
+*.tmp
