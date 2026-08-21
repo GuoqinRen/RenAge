@@ -1,6 +1,10 @@
 # RenAge: An Accurate Pan-Tissue Epigenetic Clock
 
 <p align="center">
+  <strong>Precise chronological-age inference from DNA methylation across tissues</strong>
+</p>
+
+<p align="center">
   <img alt="Python 3.10 or newer" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white">
   <img alt="Linux and macOS" src="https://img.shields.io/badge/Platforms-Linux%20%7C%20macOS-0F766E">
   <img alt="Latest release" src="https://img.shields.io/github/v/release/GuoqinRen/RenAge?color=7C3AED">
@@ -8,83 +12,35 @@
   <img alt="Research use only" src="https://img.shields.io/badge/Use-Research%20Only-EA580C">
 </p>
 
-RenAge predicts chronological age from DNA methylation beta values across
-tissues. This repository contains only the software and frozen assets needed
-for inference. It does not contain development scripts, methylation datasets,
-or sample-level benchmark records.
+<p align="center">
+  <a href="#performance">Performance</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#input-data">Input data</a> ·
+  <a href="#scope-and-limitations">Limitations</a>
+</p>
 
-## Requirements
+RenAge is a pan-tissue epigenetic clock for predicting chronological age from
+DNA methylation beta values. It combines strong accuracy in matched clock
+benchmarks with evidence spanning multiple blood cohorts and GSE111223 saliva.
 
-- Linux or macOS
-- Python 3.10 or newer
-- CPU inference on both operating systems
-- Optional NVIDIA CUDA on Linux or Apple Metal acceleration on macOS
+## At a glance
 
-## Installation
+| **Accuracy** | **Generalizability** | **Ready for inference** |
+|:---|:---|:---|
+| **1.521-year MAE** across three matched blood cohorts | Evidence across multiple blood cohorts and a saliva cohort | One command on Linux or macOS |
+| Lowest MAE among the established clocks compared | Performance is reported separately for each benchmark setting | CSV, TSV, TXT, and optional Parquet input |
 
-```bash
-git clone https://github.com/GuoqinRen/RenAge.git
-cd RenAge
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install .
-renage download
-```
+> **Benchmark highlight:** RenAge achieved the lowest MAE in both the
+> established-clock comparison (1.521 years) and the contemporary-clock
+> comparison (2.175 years).
 
-Install Parquet support when needed:
+<a id="performance"></a>
 
-```bash
-python -m pip install ".[parquet]"
-```
-
-## Input
-
-Input files may be CSV, TSV, TXT, or Parquet. Beta values must be within
-`0` and `1`. Both common orientations are accepted:
-
-- one sample per row and one CpG per column;
-- one CpG per row and one sample per column.
-
-The first identifier column should contain sample identifiers or CpG
-identifiers, as appropriate. Orientation is detected automatically, or it can
-be specified explicitly. CpG identifiers are matched without regard to letter
-case. Duplicate sample or CpG identifiers are rejected.
-
-The predictor reports panel coverage and missing-value counts. By default, at
-least 80% of required CpGs must be present. Use a different threshold only when
-it is scientifically justified.
-
-## Predict age
-
-```bash
-renage predict methylation.csv --output age_predictions.csv
-```
-
-Explicit orientation and device selection are also available:
-
-```bash
-renage predict methylation.tsv \
-  --orientation cpg-by-sample \
-  --device cpu \
-  --output age_predictions.csv \
-  --qc-output age_predictions.qc.json
-```
-
-The result contains two columns:
-
-| Column | Meaning |
-|---|---|
-| `sample_id` | Input sample identifier |
-| `predicted_age_years` | RenAge chronological-age prediction in years |
-
-Run `renage predict --help` for all options. The default `auto` device uses
-CUDA when available, then Apple Metal when available, and otherwise CPU.
-
-## Performance summary
+## Performance
 
 Mean absolute error (MAE) and root mean squared error (RMSE) are reported in
-years; lower is better. Comparisons within each table use the same specimens.
+years; lower is better. Every comparison within a table uses the same
+specimens, and results from different benchmark sets are kept separate.
 
 <img src="docs/assets/benchmark_clock_mae.png" alt="Horizontal bar charts comparing RenAge MAE with established and contemporary epigenetic clocks; RenAge has the lowest MAE in both matched benchmark groups." width="960">
 
@@ -118,7 +74,7 @@ Identical-specimen, equal-cohort results across four blood cohorts comprising
 DeepStrataAge could be evaluated in one exact-age cohort. In that cohort
 (`n=388`), MAE was 1.287 years for RenAge and 1.959 years for DeepStrataAge.
 
-### GSE111223 clock comparison
+### GSE111223 saliva cohort
 
 All clocks below were evaluated on the same 131 saliva specimens. RenAge is
 shown against clocks with multi-tissue or skin-and-blood scope.
@@ -134,9 +90,83 @@ shown against clocks with multi-tissue or skin-and-blood scope.
 
 The frozen comparator implementations had 91.8%–96.0% CpG coverage on this
 array; unavailable CpGs were handled by each implementation's built-in rule.
-GSE111223 is reported separately and is not pooled with the
-benchmark summaries above. Aggregate values used in the plots are available
-in [`docs/metrics`](docs/metrics).
+GSE111223 is reported separately and is not pooled with the benchmark
+summaries above. Aggregate values used in the plots are available in
+[`docs/metrics`](docs/metrics).
+
+<a id="quick-start"></a>
+
+## Quick start
+
+### Requirements
+
+- Linux or macOS
+- Python 3.10 or newer
+- CPU inference on both operating systems
+- Optional NVIDIA CUDA on Linux or Apple Metal acceleration on macOS
+
+### Install
+
+```bash
+git clone https://github.com/GuoqinRen/RenAge.git
+cd RenAge
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install .
+renage download
+```
+
+Install Parquet support when needed:
+
+```bash
+python -m pip install ".[parquet]"
+```
+
+### Predict age
+
+```bash
+renage predict methylation.csv --output age_predictions.csv
+```
+
+The result contains two columns:
+
+| Column | Meaning |
+|---|---|
+| `sample_id` | Input sample identifier |
+| `predicted_age_years` | RenAge chronological-age prediction in years |
+
+The default `auto` device uses CUDA when available, then Apple Metal when
+available, and otherwise CPU. Run `renage predict --help` for all options.
+
+<a id="input-data"></a>
+
+## Input data
+
+Input files may be CSV, TSV, TXT, or Parquet. Beta values must be within
+`0` and `1`. Both common orientations are accepted:
+
+- one sample per row and one CpG per column;
+- one CpG per row and one sample per column.
+
+The first identifier column should contain sample identifiers or CpG
+identifiers, as appropriate. Orientation is detected automatically, or it can
+be specified explicitly. CpG identifiers are matched without regard to letter
+case. Duplicate sample or CpG identifiers are rejected.
+
+The predictor reports panel coverage and missing-value counts. By default, at
+least 80% of required CpGs must be present. Use a different threshold only when
+it is scientifically justified.
+
+Explicit orientation and device selection are also available:
+
+```bash
+renage predict methylation.tsv \
+  --orientation cpg-by-sample \
+  --device cpu \
+  --output age_predictions.csv \
+  --qc-output age_predictions.qc.json
+```
 
 ## Reproducibility and asset integrity
 
