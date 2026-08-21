@@ -7,6 +7,7 @@
 <p align="center">
   <img alt="Python 3.10 or newer" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white">
   <img alt="Linux and macOS" src="https://img.shields.io/badge/Platforms-Linux%20%7C%20macOS-0F766E">
+  <img alt="Pan-tissue scope" src="https://img.shields.io/badge/Scope-Pan--tissue-DB2777">
   <img alt="Latest release" src="https://img.shields.io/github/v/release/GuoqinRen/RenAge?color=7C3AED">
   <img alt="Tests" src="https://github.com/GuoqinRen/RenAge/actions/workflows/test.yml/badge.svg?branch=main">
   <img alt="Research use only" src="https://img.shields.io/badge/Use-Research%20Only-EA580C">
@@ -21,14 +22,15 @@
 
 RenAge is a pan-tissue epigenetic clock for predicting chronological age from
 DNA methylation beta values. It combines strong accuracy in matched clock
-benchmarks with evidence spanning multiple blood cohorts and GSE111223 saliva.
+benchmarks with broad tissue applicability across blood, buccal, saliva,
+skin/epidermis, and brain-derived methylation profiles.
 
 ## At a glance
 
-| **Accuracy** | **Generalizability** | **Ready for inference** |
+| **Accuracy** | **Pan-tissue scope** | **Ready for inference** |
 |:---|:---|:---|
-| **1.521-year MAE** across three matched blood cohorts | Evidence across multiple blood cohorts and a saliva cohort | One command on Linux or macOS |
-| Lowest MAE among the established clocks compared | Performance is reported separately for each benchmark setting | CSV, TSV, TXT, and optional Parquet input |
+| **1.521-year MAE** across three matched blood cohorts | Evidence spans blood, buccal, saliva, skin/epidermis, and brain-derived profiles | One command on Linux or macOS |
+| Lowest MAE among the established clocks compared | Designed for tissue-diverse methylation inputs | CSV, TSV, TXT, and optional Parquet input |
 
 > **Benchmark highlight:** RenAge achieved the lowest MAE in both the
 > established-clock comparison (1.521 years) and the contemporary-clock
@@ -192,5 +194,7 @@ can be added when available.
 
 ## License
 
-Copyright 2025, Guoqin Ren. See `LICENSE` for the repository's existing use and
-distribution terms.
+RenAge is free for non-commercial use. Commercial use requires prior written
+permission. For commercial applications or licensing, contact
+[Guoqin Ren through GitHub](https://github.com/GuoqinRen). See
+[`LICENSE`](LICENSE) for the full terms.
