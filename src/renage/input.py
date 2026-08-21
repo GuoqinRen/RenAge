@@ -94,14 +94,64 @@ def _normalize_cpg_by_sample(frame: pd.DataFrame) -> tuple[list[str], pd.DataFra
     return sample_ids, values
 
 
-def prepare_input(
+def _extract_actual_ages(
+    frame: pd.DataFrame,
+    orientation: str,
+    actual_age_field: str | None,
+    sample_ids: list[str],
+) -> np.ndarray | None:
+    if actual_age_field is None:
+        return None
+    requested = str(actual_age_field).strip().casefold()
+    if not requested:
+        raise ValueError("Actual age field must be non-empty")
+
+    if orientation == "sample-by-cpg":
+        matches = [
+            column
+            for column in frame.columns
+            if str(column).strip().casefold() == requested
+        ]
+        if len(matches) != 1:
+            raise ValueError(
+                f"Actual age column {actual_age_field!r} was not found uniquely"
+            )
+        raw = frame[matches[0]]
+    else:
+        identifier_column = frame.columns[0]
+        labels = frame[identifier_column].astype(str).str.strip().str.casefold()
+        positions = np.flatnonzero(labels.to_numpy() == requested)
+        if len(positions) != 1:
+            raise ValueError(
+                f"Actual age row {actual_age_field!r} was not found uniquely"
+            )
+        matrix_sample_ids = [str(value).strip() for value in frame.columns[1:]]
+        if matrix_sample_ids != sample_ids:
+            raise RuntimeError("Actual ages could not be aligned to matrix sample identifiers")
+        raw = frame.iloc[int(positions[0]), 1:]
+
+    numeric = pd.to_numeric(raw, errors="coerce")
+    invalid_text = raw.notna() & numeric.isna()
+    if bool(invalid_text.to_numpy().any()):
+        raise ValueError("Actual ages must be numeric or missing")
+    ages = numeric.to_numpy(dtype=np.float64, copy=True)
+    if np.isinf(ages).any():
+        raise ValueError("Actual ages must be finite or missing")
+    finite = np.isfinite(ages)
+    if finite.any() and (ages[finite] < 0).any():
+        raise ValueError("Actual ages must be non-negative")
+    return ages
+
+
+def _prepare_input(
     path: str | Path,
     feature_ids: list[str],
     reference_values: np.ndarray,
     orientation: str = "auto",
     sample_id_column: str | None = None,
     min_coverage: float = 0.80,
-) -> tuple[list[str], np.ndarray, InputQC]:
+    actual_age_field: str | None = None,
+) -> tuple[list[str], np.ndarray, InputQC, np.ndarray | None]:
     source = Path(path).expanduser().resolve()
     if orientation not in ORIENTATIONS:
         raise ValueError(f"Unknown orientation {orientation!r}")
@@ -116,6 +166,13 @@ def prepare_input(
         sample_ids, values = _normalize_sample_by_cpg(frame, sample_id_column)
     else:
         sample_ids, values = _normalize_cpg_by_sample(frame)
+
+    actual_ages = _extract_actual_ages(
+        frame,
+        resolved_orientation,
+        actual_age_field,
+        sample_ids,
+    )
 
     if not sample_ids or any(not value for value in sample_ids):
         raise ValueError("Sample identifiers must be non-empty")
@@ -177,4 +234,43 @@ def prepare_input(
         cohort_reference_imputations=cohort_imputations,
         frozen_reference_imputations=frozen_imputations,
     )
-    return sample_ids, output, qc
+    return sample_ids, output, qc, actual_ages
+
+
+def prepare_input(
+    path: str | Path,
+    feature_ids: list[str],
+    reference_values: np.ndarray,
+    orientation: str = "auto",
+    sample_id_column: str | None = None,
+    min_coverage: float = 0.80,
+) -> tuple[list[str], np.ndarray, InputQC]:
+    sample_ids, matrix, qc, _ = _prepare_input(
+        path,
+        feature_ids,
+        reference_values,
+        orientation=orientation,
+        sample_id_column=sample_id_column,
+        min_coverage=min_coverage,
+    )
+    return sample_ids, matrix, qc
+
+
+def prepare_input_with_actual_ages(
+    path: str | Path,
+    feature_ids: list[str],
+    reference_values: np.ndarray,
+    orientation: str = "auto",
+    sample_id_column: str | None = None,
+    min_coverage: float = 0.80,
+    actual_age_field: str | None = None,
+) -> tuple[list[str], np.ndarray, InputQC, np.ndarray | None]:
+    return _prepare_input(
+        path,
+        feature_ids,
+        reference_values,
+        orientation=orientation,
+        sample_id_column=sample_id_column,
+        min_coverage=min_coverage,
+        actual_age_field=actual_age_field,
+    )
