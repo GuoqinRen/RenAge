@@ -1,4 +1,4 @@
-"""Command-line interface for RenAge ensemble inference."""
+"""Command-line interface for RenAge epigenetic age inference."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from .predictor import predict_file
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="renage", description="RenAge ensemble inference")
+    parser = argparse.ArgumentParser(prog="renage", description="RenAge epigenetic age inference")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
 

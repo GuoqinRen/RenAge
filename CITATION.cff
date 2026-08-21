@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use the RenAge ensemble, please cite this software release."
-title: "RenAge ensemble"
+message: "If you use RenAge, please cite this software release."
+title: "RenAge: An Accurate Pan-Tissue Epigenetic Clock"
 type: software
 authors:
   - family-names: "Ren"

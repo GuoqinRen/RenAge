@@ -1,0 +1,12 @@
+benchmark,clock,cohort_ids,n_samples,mae_years
+Established clocks,RenAge,GSE84727;GSE220622;GSE295450,1444,1.521
+Established clocks,Zhang BLUP,GSE84727;GSE220622;GSE295450,1444,2.686
+Established clocks,Skin & Blood,GSE84727;GSE220622;GSE295450,1444,2.856
+Established clocks,GP-age-30,GSE84727;GSE220622;GSE295450,1444,3.952
+Established clocks,AltumAge,GSE84727;GSE220622;GSE295450,1444,4.469
+Established clocks,Horvath multi-tissue,GSE84727;GSE220622;GSE295450,1444,5.697
+Contemporary clocks,RenAge,Four matched blood cohorts,556,2.175
+Contemporary clocks,cAge,Four matched blood cohorts,556,2.696
+Contemporary clocks,MAPLE,Four matched blood cohorts,556,4.105
+Contemporary clocks,GT-Mamba,Four matched blood cohorts,556,5.648
+Contemporary clocks,AltumAge,Four matched blood cohorts,556,5.772
