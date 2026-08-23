@@ -10,7 +10,7 @@ import pandas as pd
 import torch
 
 from .assets import resolve_assets, validate_asset_dir
-from .input import InputQC, load_feature_ids, prepare_input_with_actual_ages
+from .input import InputQC, load_feature_ids, prepare_prediction_input
 
 
 @dataclass(frozen=True)
@@ -81,7 +81,7 @@ def predict_file(
     validate_asset_dir(asset_dir)
     feature_ids = load_feature_ids(asset_dir / "feature_ids.txt")
     reference_values = np.load(asset_dir / "reference_values.npy", allow_pickle=False).astype(np.float32)
-    sample_ids, matrix, qc, actual_ages = prepare_input_with_actual_ages(
+    sample_ids, matrix, qc, actual_ages, missing_cpg_percentages = prepare_prediction_input(
         input_path,
         feature_ids,
         reference_values,
@@ -99,4 +99,5 @@ def predict_file(
     predictions = pd.DataFrame({"sample_id": sample_ids, "predicted_age_years": ages})
     if actual_ages is not None:
         predictions["actual_age_years"] = actual_ages
+    predictions["missing_cpg_percentage"] = missing_cpg_percentages
     return PredictionResult(predictions=predictions, qc=qc, device=device_name, asset_dir=asset_dir)
