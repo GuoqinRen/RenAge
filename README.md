@@ -79,7 +79,7 @@ DeepStrataAge could be evaluated in one exact-age cohort. In that cohort
 ### GSE111223 saliva cohort
 
 All clocks below were evaluated on the same 131 saliva specimens. RenAge is
-shown against clocks with multi-tissue or skin-and-blood scope.
+shown against clocks with pan-tissue or skin-and-blood scope.
 
 <img src="docs/assets/gse111223_clock_mae.png" alt="Horizontal bar chart of GSE111223 mean absolute error: RenAge 0.984 years, Skin and Blood 8.010, AltumAge 8.267, and Horvath multi-tissue 10.693." width="760">
 
@@ -87,8 +87,8 @@ shown against clocks with multi-tissue or skin-and-blood scope.
 |---|---|---:|---:|---:|
 | **RenAge** | Pan-tissue | **0.984** | **1.345** | **0.980** |
 | Skin & Blood | Skin and blood | 8.010 | 9.061 | 0.082 |
-| AltumAge | Multi-tissue | 8.267 | 9.984 | -0.115 |
-| Horvath multi-tissue | Multi-tissue | 10.693 | 12.593 | -0.774 |
+| AltumAge | Pan-tissue | 8.267 | 9.984 | -0.115 |
+| Horvath multi-tissue | Pan-tissue | 10.693 | 12.593 | -0.774 |
 
 The frozen comparator implementations had 91.8%–96.0% CpG coverage on this
 array; unavailable CpGs were handled by each implementation's built-in rule.
@@ -127,6 +127,10 @@ python -m pip install ".[parquet]"
 
 ### Predict age
 
+> **Example input:** See
+> [`examples/example_methylation_input.csv`](examples/example_methylation_input.csv)
+> for a compact sample-by-CpG format reference with actual ages.
+
 ```bash
 renage predict methylation.csv --output age_predictions.csv
 ```
@@ -151,6 +155,7 @@ The output columns are:
 | `sample_id` | Input sample identifier |
 | `predicted_age_years` | RenAge chronological-age prediction in years |
 | `actual_age_years` | Supplied chronological age; present only with `--actual-age-field` |
+| `missing_cpg_percentage` | Percentage of required CpGs absent or missing for the sample before imputation |
 
 The default `auto` device uses CUDA when available, then Apple Metal when
 available, and otherwise CPU. Run `renage predict --help` for all options.
@@ -170,9 +175,17 @@ identifiers, as appropriate. Orientation is detected automatically, or it can
 be specified explicitly. CpG identifiers are matched without regard to letter
 case. Duplicate sample or CpG identifiers are rejected.
 
-The predictor reports panel coverage and missing-value counts. By default, at
-least 80% of required CpGs must be present. Use a different threshold only when
-it is scientifically justified.
+A small sample-by-CpG file with actual ages is available at
+[`examples/example_methylation_input.csv`](examples/example_methylation_input.csv).
+It uses real RenAge CpG identifiers to illustrate the expected layout. Because
+it is intentionally small, use it as a format reference rather than a complete
+inference matrix. In a complete input, select its age column with
+`--actual-age-field actual_age_years`.
+
+The predictor reports panel coverage and missing-value counts. The prediction
+CSV also shows the percentage of required CpGs absent or missing for each
+sample before imputation. By default, at least 80% of required CpGs must be
+present. Use a different threshold only when it is scientifically justified.
 
 Explicit orientation and device selection are also available:
 

@@ -151,7 +151,7 @@ def _prepare_input(
     sample_id_column: str | None = None,
     min_coverage: float = 0.80,
     actual_age_field: str | None = None,
-) -> tuple[list[str], np.ndarray, InputQC, np.ndarray | None]:
+) -> tuple[list[str], np.ndarray, InputQC, np.ndarray | None, np.ndarray]:
     source = Path(path).expanduser().resolve()
     if orientation not in ORIENTATIONS:
         raise ValueError(f"Unknown orientation {orientation!r}")
@@ -205,6 +205,10 @@ def _prepare_input(
     positions = np.asarray([feature_positions[feature] for feature in present_ids], dtype=int)
     missing = ~finite
     missing_count = int(missing.sum())
+    absent_count = len(feature_ids) - len(present_ids)
+    missing_cpg_percentages = (
+        (absent_count + missing.sum(axis=1)) / len(feature_ids) * 100.0
+    )
     counts = finite.sum(axis=0)
     sums = np.where(finite, observed, 0.0).sum(axis=0, dtype=np.float64)
     cohort_values = np.full(len(present_ids), np.nan, dtype=np.float32)
@@ -229,12 +233,12 @@ def _prepare_input(
         required_cpgs=len(feature_ids),
         present_cpgs=len(present_ids),
         coverage_fraction=coverage,
-        absent_cpgs=len(feature_ids) - len(present_ids),
+        absent_cpgs=absent_count,
         missing_input_values=missing_count,
         cohort_reference_imputations=cohort_imputations,
         frozen_reference_imputations=frozen_imputations,
     )
-    return sample_ids, output, qc, actual_ages
+    return sample_ids, output, qc, actual_ages, missing_cpg_percentages
 
 
 def prepare_input(
@@ -245,7 +249,7 @@ def prepare_input(
     sample_id_column: str | None = None,
     min_coverage: float = 0.80,
 ) -> tuple[list[str], np.ndarray, InputQC]:
-    sample_ids, matrix, qc, _ = _prepare_input(
+    sample_ids, matrix, qc, _, _ = _prepare_input(
         path,
         feature_ids,
         reference_values,
@@ -265,6 +269,28 @@ def prepare_input_with_actual_ages(
     min_coverage: float = 0.80,
     actual_age_field: str | None = None,
 ) -> tuple[list[str], np.ndarray, InputQC, np.ndarray | None]:
+    sample_ids, matrix, qc, actual_ages, _ = _prepare_input(
+        path,
+        feature_ids,
+        reference_values,
+        orientation=orientation,
+        sample_id_column=sample_id_column,
+        min_coverage=min_coverage,
+        actual_age_field=actual_age_field,
+    )
+    return sample_ids, matrix, qc, actual_ages
+
+
+def prepare_prediction_input(
+    path: str | Path,
+    feature_ids: list[str],
+    reference_values: np.ndarray,
+    orientation: str = "auto",
+    sample_id_column: str | None = None,
+    min_coverage: float = 0.80,
+    actual_age_field: str | None = None,
+) -> tuple[list[str], np.ndarray, InputQC, np.ndarray | None, np.ndarray]:
+    """Prepare inference input and return per-sample missing-CpG percentages."""
     return _prepare_input(
         path,
         feature_ids,
