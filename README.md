@@ -127,6 +127,10 @@ python -m pip install ".[parquet]"
 
 ### Predict age
 
+> **Example input:** See
+> [`examples/example_methylation_input.csv`](examples/example_methylation_input.csv)
+> for a compact sample-by-CpG format reference with actual ages.
+
 ```bash
 renage predict methylation.csv --output age_predictions.csv
 ```
